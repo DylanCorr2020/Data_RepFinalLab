@@ -3,6 +3,7 @@ const app = express()
 const port = 4000
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const path = require('path');
 
 app.use(cors());
 app.use(function(req, res, next) {
@@ -13,6 +14,16 @@ res.header("Access-Control-Allow-Headers",
 next();
 });
 
+
+//configurations to find these important files
+//in build folder
+//find the directory
+app.use(express.static(path.join(__dirname,'../build')));
+
+//find static folder
+//told the server where these folders are
+app.use('/static',express.static(path.join(__dirname, 'build/staic')));
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -20,6 +31,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 const mongoose = require('mongoose');
+const e = require('express');
 
 const strConnection = 'mongodb+srv://admin:admin@cluster0.8taek.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
 
@@ -99,6 +111,19 @@ app.get('/api/movies', (req, res) => {
 })
 
 
+//production build of our front end
+//npm build will add a folder 
+//it includes index.html
+
+
+
+//for any other root points will return the index.html file
+//sending a file and joining two paths
+// /../ means come out of the backend folder and go into build folder
+// * will return the html file to any url except for the root points above 
+app.get('*',(req,res)=>{
+    res.sendFile(path.join(__dirname + '/../build/index.html'));
+})
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
